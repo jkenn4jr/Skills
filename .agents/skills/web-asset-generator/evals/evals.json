@@ -1,0 +1,97 @@
+{
+  "skill_name": "web-asset-generator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need to generate Open Graph images for my blog. Each post has a title, author name, and category. I want a dark background with white text and my logo in the corner. Can you write a Python script for this?",
+      "expected_output": "Should check for product-marketing-context.md first. Should write a complete Python Pillow script that: accepts title/author/category as input (from a JSON/CSV file or CLI args), draws a dark background, places a logo image, renders title text with word-wrapping (since titles can be long), renders author and category text, saves output as PNG at correct OG dimensions (1200x630). Should include a configuration block at the top for colors, fonts, dimensions. Should show example usage. Should note font files must be bundled (not system fonts).",
+      "assertions": [
+        "Checks for product-marketing-context.md",
+        "Provides complete runnable Python Pillow script",
+        "Uses correct OG image dimensions (1200x630)",
+        "Implements word-wrapping for title text",
+        "Accepts dynamic input (not hardcoded titles)",
+        "Includes configuration block at top of script",
+        "Notes need to bundle font files",
+        "Shows example usage command"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I have 500 blog posts in a posts.json file with fields: title, slug, category, author. I need to batch generate an OG image for each one and save them as {slug}.png. How do I do this efficiently?",
+      "expected_output": "Should activate batch generation mode. Should write a Python script that reads the JSON file, iterates over all records, generates an image per record using a shared template, saves each as {slug}.png, and logs progress. Should handle missing/empty fields gracefully. Should mention that a base template image can be opened once and copied per iteration (not re-created from scratch each time) for performance. Should suggest running this as a build step or CI job. Should note approximate time for 500 images and any performance tips (e.g., multiprocessing for large batches).",
+      "assertions": [
+        "Reads input from JSON file",
+        "Iterates over all records in batch",
+        "Saves each image as {slug}.png",
+        "Logs progress during batch generation",
+        "Handles missing fields gracefully",
+        "Opens base template once and copies per iteration",
+        "Suggests automation / CI integration",
+        "Provides performance tips for large batches"
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I need to generate a complete favicon set for my website from a single 512x512 PNG logo. What sizes do I need and how do I create them all?",
+      "expected_output": "Should explain the required favicon sizes: 16x16, 32x32 (favicon.ico), 180x180 (apple-touch-icon.png), 192x192 (android-chrome-192x192.png), 512x512 (android-chrome-512x512.png). Should write a Python Pillow script that opens the source 512x512 image, resizes to each required size using high-quality resampling (LANCZOS), saves each file with the correct filename. Should show how to create favicon.ico with multiple embedded sizes. Should provide the HTML meta tags needed to reference the generated favicons. Should note that the source image should have a transparent background (RGBA mode).",
+      "assertions": [
+        "Lists all required favicon sizes and filenames",
+        "Writes Python Pillow script for resizing",
+        "Uses LANCZOS resampling for quality",
+        "Creates favicon.ico with multiple embedded sizes",
+        "Provides HTML meta tags for referencing favicons",
+        "Notes source image should have transparent background (RGBA)"
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "I want to generate Twitter/X card images and LinkedIn banner images for my SaaS product's feature announcements. What are the correct dimensions and how should I structure the layout?",
+      "expected_output": "Should provide correct platform dimensions: Twitter card 1200x628 (or 1200x675 for in-stream), LinkedIn link post 1200x628, LinkedIn company banner 1128x191. Should describe layout best practices: safe zone margins (keep content 50-100px from edges), text hierarchy (headline + subheadline + logo), recommended font sizes. Should write a Python Pillow script or layout template showing how to structure these. Should mention that both platforms show images at different aspect ratios depending on context. Should reference asset-specs.md for complete platform specs.",
+      "assertions": [
+        "Provides correct Twitter card dimensions (1200x628 or 1200x675)",
+        "Provides correct LinkedIn link post dimensions (1200x628)",
+        "Mentions safe zone / margins for edge cropping",
+        "Describes text hierarchy for the layout",
+        "Writes Python Pillow script or layout template",
+        "Notes platform-specific cropping behavior",
+        "References asset-specs.md for complete specs"
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "I want to create dynamic thumbnail images for each YouTube video in my content library. I have a CSV with columns: title, episode_number, guest_name, background_image_path. How can I automate this?",
+      "expected_output": "Should recognize this as a batch dynamic thumbnail use case. Should write a Python Pillow script that: reads the CSV file, for each row opens the background image, applies a semi-transparent overlay for text readability, draws episode number (large, prominent), title text with word-wrapping, guest name, saves output as a PNG. Should handle cases where background_image_path is missing (fall back to a solid color). Should demonstrate how to add overlay/gradient for text contrast. Should suggest a naming convention for output files (e.g., episode-{number}.png). Should note standard YouTube thumbnail dimensions (1280x720).",
+      "assertions": [
+        "Reads input from CSV file",
+        "Opens and composites background image per row",
+        "Applies semi-transparent overlay for text readability",
+        "Word-wraps title text",
+        "Handles missing background image with fallback",
+        "Uses correct YouTube thumbnail dimensions (1280x720)",
+        "Suggests meaningful output filename convention",
+        "Demonstrates overlay/gradient technique for contrast"
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "I want to use HTML and CSS to generate my OG images instead of Pillow because my designer built a complex layout. What's the best approach?",
+      "expected_output": "Should recognize this as a case where html2image or Playwright is more appropriate than Pillow. Should explain the html2image approach (render HTML template to PNG) and the Playwright approach (headless browser screenshot). Should provide code examples for both. Should explain trade-offs: html2image is simpler but less reliable cross-platform; Playwright is more reliable but heavier dependency. Should note that fonts must still be explicitly loaded in the HTML/CSS (use @font-face). Should mention that for CI/CD, Playwright needs a browser install step. Should NOT insist on Pillow when the user has clearly stated a preference for HTML/CSS.",
+      "assertions": [
+        "Recognizes HTML/CSS approach is appropriate here",
+        "Explains html2image and Playwright as options",
+        "Provides code examples for at least one approach",
+        "Explains trade-offs between html2image and Playwright",
+        "Notes fonts must be explicitly loaded in HTML/CSS",
+        "Mentions CI/CD browser install requirement for Playwright",
+        "Does not insist on using Pillow"
+      ],
+      "files": []
+    }
+  ]
+}
