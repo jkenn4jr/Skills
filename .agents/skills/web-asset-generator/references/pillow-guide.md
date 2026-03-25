@@ -4,6 +4,8 @@ Practical patterns and ready-to-use code for generating web images with [Pillow]
 
 ```bash
 pip install Pillow
+# For emoji rendering in images:
+pip install pilmoji 'emoji<2.0.0'
 ```
 
 ---
@@ -502,6 +504,132 @@ def generate_one(post):
 with Pool(processes=4) as pool:
     pool.map(generate_one, posts)
 ```
+
+---
+
+## Emoji Rendering with Pilmoji
+
+Standard Pillow cannot render emoji characters — they render as boxes or are skipped entirely. [Pilmoji](https://github.com/jay3332/pilmoji) solves this by compositing emoji glyphs from a provider (Twitter/Twemoji, Apple, Google, etc.) onto the image.
+
+```bash
+pip install pilmoji 'emoji<2.0.0'
+```
+
+### Basic usage
+
+Drop-in replacement for `ImageDraw.text()`:
+
+```python
+from PIL import Image, ImageFont
+from pilmoji import Pilmoji
+
+img = Image.new("RGB", (800, 200), (20, 20, 20))
+font = ImageFont.truetype("fonts/Inter-Bold.ttf", 48)
+
+with Pilmoji(img) as pilmoji:
+    pilmoji.text((40, 60), "🚀 Launching soon!", fill=(255, 255, 255), font=font)
+
+img.save("output.png")
+```
+
+### Emoji providers
+
+Pilmoji supports multiple emoji sets. Pass a `source` to control which one is used:
+
+```python
+from pilmoji import Pilmoji
+from pilmoji.source import TwitterEmojiSource, AppleEmojiSource, GoogleEmojiSource
+
+# Twitter/Twemoji — open-source, consistent cross-platform (default)
+with Pilmoji(img, source=TwitterEmojiSource) as pilmoji:
+    pilmoji.text((40, 60), "✅ Done 🎉", fill=(255, 255, 255), font=font)
+
+# Apple — matches iOS/macOS emoji appearance
+with Pilmoji(img, source=AppleEmojiSource) as pilmoji:
+    pilmoji.text((40, 60), "✅ Done 🎉", fill=(255, 255, 255), font=font)
+```
+
+**Provider comparison:**
+
+| Provider | License | Notes |
+|---|---|---|
+| `TwitterEmojiSource` | MIT (Twemoji) | Default; safe for commercial use |
+| `AppleEmojiSource` | Proprietary | May not be suitable for all commercial use |
+| `GoogleEmojiSource` | Apache 2.0 | Noto Emoji; clean and open-source |
+| `MicrosoftEmojiSource` | Proprietary | Fluent emoji style |
+
+### Emoji in OG image generation
+
+```python
+from PIL import Image, ImageFont
+from pilmoji import Pilmoji
+from pilmoji.source import TwitterEmojiSource
+
+def generate_og_with_emoji(title: str, emoji: str, output_path: str) -> None:
+    img = Image.new("RGB", (1200, 630), (18, 18, 18))
+    title_font = ImageFont.truetype("fonts/Inter-Bold.ttf", 64)
+    emoji_font = ImageFont.truetype("fonts/Inter-Bold.ttf", 80)
+
+    with Pilmoji(img, source=TwitterEmojiSource) as pilmoji:
+        # Large emoji at top
+        pilmoji.text((80, 80), emoji, fill=(255, 255, 255), font=emoji_font)
+        # Title with inline emoji support
+        pilmoji.text((80, 200), title, fill=(255, 255, 255), font=title_font)
+
+    img.save(output_path, "PNG", optimize=True)
+
+generate_og_with_emoji("🚀 Ship faster with automation", "✨", "output/og.png")
+```
+
+### Emoji sizing and alignment
+
+Emoji are rendered slightly larger than the font size by default. Use `emoji_scale_factor` to adjust:
+
+```python
+with Pilmoji(img) as pilmoji:
+    pilmoji.text(
+        (80, 200),
+        "⚡ Fast results",
+        fill=(255, 255, 255),
+        font=font,
+        emoji_scale_factor=1.2,   # emoji 20% larger than text
+    )
+```
+
+### Word-wrapping with emoji
+
+Standard word-wrap functions break on emoji. Measure text width with Pilmoji's `getsize`:
+
+```python
+from pilmoji import Pilmoji
+
+def wrap_text_emoji(img, text, font, max_width):
+    words = text.split()
+    lines = []
+    current = ""
+
+    with Pilmoji(img) as pilmoji:
+        for word in words:
+            test = f"{current} {word}".strip()
+            w, _ = pilmoji.getsize(test, font)
+            if w > max_width and current:
+                lines.append(current)
+                current = word
+            else:
+                current = test
+        if current:
+            lines.append(current)
+
+    return lines
+```
+
+### Notes and caveats
+
+- Pilmoji fetches emoji images from CDN on first use; subsequent runs use a local cache
+- For offline/CI environments, pre-warm the cache or use a local emoji source
+- The `emoji<2.0.0` pin is required — newer versions changed the API that Pilmoji depends on
+- Pilmoji works with `RGBA` and `RGB` images; prefer `RGBA` for best compositing results
+- Not all emoji are available in all providers; missing emoji silently fall back to the font glyph
 
 ---
 

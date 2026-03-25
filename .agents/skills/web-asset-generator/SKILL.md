@@ -82,6 +82,8 @@ Best default for most web asset generation:
 
 ```bash
 pip install Pillow
+# Add emoji support:
+pip install pilmoji 'emoji<2.0.0'
 ```
 
 Use when:
@@ -89,6 +91,8 @@ Use when:
 - Batch production from data files
 - No browser/rendering dependency needed
 - Running in CI/CD or serverless
+
+**Pilmoji** extends Pillow to render emoji correctly (🚀 ✅ 🎉). Standard Pillow renders emoji as boxes. Use `Pilmoji` as a drop-in replacement for `ImageDraw.text()` whenever the content may include emoji. See [references/pillow-guide.md](references/pillow-guide.md) for usage and provider options (Twemoji, Google Noto, Apple).
 
 ### Alternative: html2image / Playwright
 
